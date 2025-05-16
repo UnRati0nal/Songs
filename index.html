@@ -16,6 +16,7 @@
             --progress-played: linear-gradient(90deg, var(--primary), var(--secondary));
             --progress-handle: #ffffff;
             --inactive-opacity: 0.15;
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
         }
         
         body {
@@ -31,12 +32,13 @@
             align-items: center;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             touch-action: manipulation;
+            padding-bottom: var(--safe-area-bottom);
         }
         
         .lyrics-container {
             width: 95%;
             max-width: 900px;
-            height: 90vh;
+            height: calc(90vh - var(--safe-area-bottom));
             max-height: 800px;
             position: relative;
             overflow: hidden;
@@ -47,6 +49,7 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
+            margin-bottom: var(--safe-area-bottom);
         }
         
         .song-info {
@@ -163,6 +166,13 @@
             font-size: clamp(1rem, 3vw, 1.4rem);
         }
         
+        .lyrics-line.break {
+            height: 20px;
+            margin: 0;
+            padding: 0;
+            opacity: 0;
+        }
+        
         /* Barra de progreso */
         .progress-container {
             width: 100%;
@@ -204,6 +214,7 @@
             margin-top: 15px;
             gap: 15px;
             flex-shrink: 0;
+            padding-bottom: var(--safe-area-bottom);
         }
         
         .control-btn {
@@ -308,7 +319,7 @@
             
             .lyrics-container {
                 width: 100%;
-                height: 95vh;
+                height: calc(95vh - var(--safe-area-bottom));
                 max-height: none;
                 padding: 15px;
                 border-radius: 12px;
@@ -338,6 +349,7 @@
             .controls {
                 margin-top: 10px;
                 gap: 10px;
+                padding-bottom: calc(10px + var(--safe-area-bottom));
             }
             
             .control-btn {
@@ -361,7 +373,7 @@
         
         @media (max-width: 480px) {
             .lyrics-container {
-                height: 90vh;
+                height: calc(90vh - var(--safe-area-bottom));
                 padding: 12px;
             }
             
@@ -454,12 +466,14 @@
             { text: "Heavy love", time: 25.5},
             { text: "(Ooh, ah, ooh, ah)", time: 28.0, type: "adlib"},
             { text: "(Ooh, ah, ooh, ah)", time: 30.0, type: "adlib" },
-            { text: " ", time: 30.5 },
+            { text: "", time: 30.9, type: "break" },
+
             { text: "Yeah (co-co-co-co—)", time: 31.0, type: "adlib"},
             { text: "Yeah, my codeine looking like Barney", time: 32.0 },
             { text: "This bitch acting way too preppy like Barbie", time: 36.0 },
             { text: "I-I-I like sleazy bitches ready to party", time: 39.5 },
             { text: "Rub that pussy on my stache like Steve Harvey", time: 44.0 },
+            { text: "", time: 48.4, type: "break" },
             
             { text: "Got my hand on that wheel", time: 48.5 },
             { text: "whippin' down the highway", time: 49.5 },
@@ -469,6 +483,7 @@
             { text: "The only time I see you Friday", time: 58.0 },
             { text: "And when you see your mom", time: 61.0 },
             { text: "Just let her know how much you like me", time: 62.0 },
+            { text: "", time: 64.9, type: "break" },
             
             { text: "Put your weight up on me", time: 65.0 },
             { text: "Heavy love", time: 66.5 },
@@ -478,25 +493,29 @@
             { text: "Heavy love", time: 74.5 },
             { text: "(Ooh, ah, ooh, ah)", time: 77.0, type: "adlib"},
             { text: "(Ooh, ah, ooh, ah)", time: 79.0, type: "adlib" },
+            { text: "", time: 81.9, type: "break" },
             
             { text: "You ain't got shit goin' on", time: 82.0 },
             { text: "You ain't gon' touch my shit at all", time: 83.5 },
             { text: "One, two, three, got 'em froze", time: 86.0 },
             { text: "They don't got five plaques on they walls", time: 87.0 },
+            { text: "", time: 89.4, type: "break" },
             
-            { text: "(Do it, do it)", time: 90.0, type: "adlib"},
-            { text: "(Do it, do it)", time: 91.0, type: "adlib"},
-            { text: "(Do it, do it)", time: 92.0, type: "adlib"},
-            { text: "(Do it, uh)", time: 93.0, type: "adlib"},
-            { text: "(Do it, do it)", time: 94.0, type: "adlib"},
-            { text: "(Do it, do it)", time: 95.0, type: "adlib"},
-            { text: "(Do it, do it)", time: 96.0, type: "adlib"},
-            { text: "(Do it, uh)", time: 97.0, type: "adlib"},
+            { text: "(Do it, do it)", time: 89.5, type: "adlib"},
+            { text: "(Do it, do it)", time: 90.5, type: "adlib"},
+            { text: "(Do it, do it)", time: 91., type: "adlib"},
+            { text: "(Do it, uh)", time: 92.5, type: "adlib"},
+            { text: "(Do it, do it)", time: 93.5, type: "adlib"},
+            { text: "(Do it, do it)", time: 94.5, type: "adlib"},
+            { text: "(Do it, do it)", time: 95.5, type: "adlib"},
+            { text: "(Do it, uh)", time: 96.5, type: "adlib"},
+            { text: "", time: 97.9, type: "break" },
             
             { text: "♫", time: 98.0, type: "section" },
             { text: "Snow angels", time: 101.0 },
             { text: "♫", time: 106.0, type: "section" },
             { text: "Snow angels", time: 109.0 },
+            { text: "", time: 112.4, type: "break" },
             
             { text: "Put your weight up on me", time: 113.5 },
             { text: "Heavy love", time: 115.0 },
@@ -506,6 +525,7 @@
             { text: "Heavy love", time: 123.0 },
             { text: "(Ooh, ah, ooh, ah)", time: 125.5, type: "adlib"},
             { text: "(Ooh, ah, ooh, ah)", time: 127.5, type: "adlib" },
+            { text: "", time: 130.0, type: "break" },
         ];
 
         // DOM elements
@@ -533,6 +553,8 @@
                     lineElement.classList.add('section-title');
                 } else if (line.type === "adlib") {
                     lineElement.classList.add('adlib');
+                } else if (line.type === "break") {
+                    lineElement.classList.add('break');
                 }
                 
                 if (line.class) {
@@ -718,17 +740,14 @@
         
         // Ajustar altura en dispositivos móviles
         function adjustHeightForMobile() {
-            if ('virtualKeyboard' in navigator) {
-                // Para navegadores que soportan la API de teclado virtual
-                navigator.virtualKeyboard.overlaysContent = true;
-            }
-            
-            // Ajustar altura para evitar problemas con la barra de direcciones
+            // Ajustar altura para evitar problemas con la barra de navegación
             const setAppHeight = () => {
-                document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+                const doc = document.documentElement;
+                doc.style.setProperty('--safe-area-bottom', `${window.innerHeight - document.body.getBoundingClientRect().bottom}px`);
             };
             
             window.addEventListener('resize', setAppHeight);
+            window.addEventListener('orientationchange', setAppHeight);
             setAppHeight();
         }
         
