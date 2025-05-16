@@ -16,7 +16,7 @@
             --progress-played: linear-gradient(90deg, var(--primary), var(--secondary));
             --progress-handle: #ffffff;
             --inactive-opacity: 0.15;
-            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
         }
         
         body {
@@ -38,7 +38,7 @@
         .lyrics-container {
             width: 95%;
             max-width: 900px;
-            height: calc(90vh - var(--safe-area-bottom));
+            height: 85vh; /* Reducido de 90vh a 85vh */
             max-height: 800px;
             position: relative;
             overflow: hidden;
@@ -87,6 +87,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin-bottom: 10px; /* Añadido margen inferior */
         }
         
         .lyrics-wrapper {
@@ -176,7 +177,7 @@
         /* Barra de progreso */
         .progress-container {
             width: 100%;
-            margin: 15px 0;
+            margin: 10px 0; /* Reducido el margen */
             flex-shrink: 0;
         }
         
@@ -211,10 +212,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 15px;
+            margin-top: 10px; /* Reducido el margen superior */
             gap: 15px;
             flex-shrink: 0;
-            padding-bottom: var(--safe-area-bottom);
+            padding-bottom: 10px; /* Añadido padding inferior */
+            position: relative;
+            z-index: 10;
         }
         
         .control-btn {
@@ -315,14 +318,16 @@
             body {
                 padding: 10px;
                 min-height: -webkit-fill-available;
+                padding-bottom: calc(var(--safe-area-bottom) + 20px); /* Añadido más padding */
             }
             
             .lyrics-container {
                 width: 100%;
-                height: calc(95vh - var(--safe-area-bottom));
+                height: 80vh; /* Reducido aún más para móviles */
                 max-height: none;
                 padding: 15px;
                 border-radius: 12px;
+                margin-bottom: 0;
             }
             
             .song-title {
@@ -335,55 +340,56 @@
             
             .lyrics-content {
                 padding: 5px 0;
+                margin-bottom: 5px; /* Reducido margen inferior */
             }
             
             .lyrics-line {
-                margin: 10px 0;
+                margin: 8px 0; /* Reducido margen */
                 line-height: 1.5;
             }
             
             .lyrics-line.section-title {
-                margin: 15px 0 10px 0;
+                margin: 12px 0 8px 0; /* Reducido margen */
             }
             
             .controls {
-                margin-top: 20px;
-                gap: 20px;
-                padding-bottom: calc(20px + var(--safe-area-bottom));
+                margin-top: 10px; /* Reducido margen superior */
+                gap: 15px; /* Reducido espacio entre controles */
+                padding-bottom: 10px; /* Añadido padding inferior */
                 position: relative;
                 z-index: 10;
             }
             
             .control-btn {
-                width: 70px;
-                height: 70px;
+                width: 55px; /* Reducido tamaño */
+                height: 55px;
                 background: rgba(255, 255, 255, 0.2);
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             }
             
             .control-btn i {
-                font-size: 1.8rem;
+                font-size: 1.5rem; /* Reducido tamaño */
             }
             
             /* Aumentar el área táctil del control de volumen */
             .volume-control {
-                transform: scale(1.2);
-                margin-left: 10px;
+                transform: scale(1.1); /* Reducido ligeramente */
+                margin-left: 5px; /* Reducido margen */
             }
             
             /* Ajustar la barra de progreso */
             .progress-container {
-                margin: 20px 0;
+                margin: 10px 0; /* Reducido margen */
             }
             
             .spotify-progress {
-                height: 8px;
+                height: 6px; /* Reducido altura */
             }
         }
         
         @media (max-width: 480px) {
             .lyrics-container {
-                height: calc(90vh - var(--safe-area-bottom));
+                height: 75vh; /* Ajuste adicional para pantallas muy pequeñas */
                 padding: 12px;
             }
             
@@ -393,7 +399,7 @@
             
             .lyrics-line {
                 font-size: 1.1rem;
-                margin: 8px 0;
+                margin: 6px 0; /* Margen aún más pequeño */
             }
             
             .lyrics-line.section-title {
@@ -401,30 +407,26 @@
             }
             
             .controls {
-                gap: 15px;
-                padding-bottom: calc(15px + var(--safe-area-bottom));
+                gap: 10px; /* Menor espacio entre controles */
+                padding-bottom: 5px; /* Menor padding inferior */
             }
             
             .control-btn {
-                width: 65px;
-                height: 65px;
+                width: 50px; /* Controles más pequeños */
+                height: 50px;
             }
             
             .control-btn i {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
             }
             
             .volume-control {
-                transform: scale(1.1);
+                transform: scale(1); /* Tamaño normal */
             }
             
             /* Asegurar que los controles no se solapen con la barra de navegación */
             body {
-                padding-bottom: calc(50px + var(--safe-area-bottom));
-            }
-            
-            .lyrics-container {
-                padding-bottom: 20px;
+                padding-bottom: calc(30px + var(--safe-area-bottom)); /* Ajuste del padding */
             }
         }
         
@@ -777,19 +779,73 @@
         
         // Ajustar altura en dispositivos móviles
         function adjustHeightForMobile() {
-            // Ajustar altura para evitar problemas con la barra de navegación
-            const setAppHeight = () => {
-                const doc = document.documentElement;
-                doc.style.setProperty('--safe-area-bottom', `${window.innerHeight - document.body.getBoundingClientRect().bottom}px`);
+            // Primero, establecer un valor por defecto
+            let safeAreaBottom = '20px';
+            
+            // Verificar si el navegador soporta env() y safe-area-inset-bottom
+            if (CSS.supports('padding-bottom: env(safe-area-inset-bottom)')) {
+                safeAreaBottom = 'env(safe-area-inset-bottom)';
+            } else if (CSS.supports('padding-bottom: constant(safe-area-inset-bottom)')) {
+                safeAreaBottom = 'constant(safe-area-inset-bottom)';
+            }
+            
+            // Aplicar el valor calculado
+            document.documentElement.style.setProperty('--safe-area-bottom', safeAreaBottom);
+            
+            // Ajustar dinámicamente si es necesario
+            const updateSafeArea = () => {
+                const visualViewport = window.visualViewport;
+                if (visualViewport) {
+                    const viewportHeight = visualViewport.height;
+                    const windowHeight = window.innerHeight;
+                    const keyboardHeight = windowHeight - viewportHeight;
+                    
+                    if (keyboardHeight > 0) {
+                        // Teclado visible, ajustar el área segura
+                        document.documentElement.style.setProperty('--safe-area-bottom', `${keyboardHeight}px`);
+                    } else {
+                        // Teclado no visible, usar el valor por defecto
+                        document.documentElement.style.setProperty('--safe-area-bottom', safeAreaBottom);
+                    }
+                }
             };
             
-            window.addEventListener('resize', setAppHeight);
-            window.addEventListener('orientationchange', setAppHeight);
-            setAppHeight();
+            // Escuchar cambios en la vista
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', updateSafeArea);
+            }
+            
+            // Llamar inicialmente
+            updateSafeArea();
         }
         
         // Llamar a la función de ajuste de altura
         adjustHeightForMobile();
+        
+        // Asegurar que los controles sean accesibles en móviles
+        function ensureControlsVisible() {
+            const controls = document.querySelector('.controls');
+            const container = document.querySelector('.lyrics-container');
+            
+            // Verificar si los controles están fuera de la vista
+            const controlsRect = controls.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            if (controlsRect.bottom > window.innerHeight) {
+                // Ajustar la altura del contenedor para que los controles sean visibles
+                container.style.height = `${window.innerHeight - controlsRect.height - 30}px`;
+            }
+        }
+        
+        // Ejecutar después de que se cargue todo
+        window.addEventListener('load', () => {
+            ensureControlsVisible();
+            // Volver a verificar después de un pequeño retraso para asegurarse
+            setTimeout(ensureControlsVisible, 500);
+        });
+        
+        // También verificar en redimensiones
+        window.addEventListener('resize', ensureControlsVisible);
     </script>
 </body>
 </html>
