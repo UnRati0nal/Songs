@@ -347,27 +347,37 @@
             }
             
             .controls {
-                margin-top: 10px;
-                gap: 10px;
-                padding-bottom: calc(10px + var(--safe-area-bottom));
+                margin-top: 20px;
+                gap: 20px;
+                padding-bottom: calc(20px + var(--safe-area-bottom));
+                position: relative;
+                z-index: 10;
             }
             
             .control-btn {
-                width: 55px;
-                height: 55px;
+                width: 70px;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             }
             
             .control-btn i {
-                font-size: 1.3rem;
+                font-size: 1.8rem;
             }
             
-            .slider {
-                --slider-width: 70px;
-                --icon-size: 16px;
+            /* Aumentar el área táctil del control de volumen */
+            .volume-control {
+                transform: scale(1.2);
+                margin-left: 10px;
+            }
+            
+            /* Ajustar la barra de progreso */
+            .progress-container {
+                margin: 20px 0;
             }
             
             .spotify-progress {
-                height: 6px;
+                height: 8px;
             }
         }
         
@@ -390,13 +400,31 @@
                 font-size: 1.3rem;
             }
             
-            .control-btn {
-                width: 50px;
-                height: 50px;
+            .controls {
+                gap: 15px;
+                padding-bottom: calc(15px + var(--safe-area-bottom));
             }
             
-            .slider {
-                --slider-width: 60px;
+            .control-btn {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .control-btn i {
+                font-size: 1.6rem;
+            }
+            
+            .volume-control {
+                transform: scale(1.1);
+            }
+            
+            /* Asegurar que los controles no se solapen con la barra de navegación */
+            body {
+                padding-bottom: calc(50px + var(--safe-area-bottom));
+            }
+            
+            .lyrics-container {
+                padding-bottom: 20px;
             }
         }
         
@@ -503,7 +531,7 @@
             
             { text: "(Do it, do it)", time: 89.5, type: "adlib"},
             { text: "(Do it, do it)", time: 90.5, type: "adlib"},
-            { text: "(Do it, do it)", time: 91., type: "adlib"},
+            { text: "(Do it, do it)", time: 91.5, type: "adlib"},
             { text: "(Do it, uh)", time: 92.5, type: "adlib"},
             { text: "(Do it, do it)", time: 93.5, type: "adlib"},
             { text: "(Do it, do it)", time: 94.5, type: "adlib"},
@@ -698,17 +726,26 @@
             }
         });
         
-        // Mejorar la experiencia táctil para el botón de play
-        playBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            playBtn.style.transform = 'scale(0.95)';
+        // Mejorar feedback táctil para los botones
+        playBtn.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.9)';
+            this.style.transition = 'transform 0.1s ease';
         });
         
-        playBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            playBtn.style.transform = 'scale(1)';
-            playBtn.click();
+        playBtn.addEventListener('touchend', function() {
+            this.style.transform = 'scale(1)';
         });
+        
+        // Prevenir zoom no deseado con doble toque
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
         
         // Update total time when metadata is loaded
         audioPlayer.addEventListener('loadedmetadata', () => {
