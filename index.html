@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Heavy Love - Odetari Lyrics</title>
+    <style>
+        :root {
+            --primary: #ff4d8d;
+            --secondary: #ff00aa;
+            --background: #121212;
+            --text: #ffffff;
+            --highlight: #ff6bff;
+            --intro-color: #ff9ebb;
+            --progress-bg: rgba(255, 255, 255, 0.2);
+            --progress-played: linear-gradient(90deg, var(--primary), var(--secondary));
+            --progress-handle: #ffffff;
+            --inactive-opacity: 0.15;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            touch-action: manipulation;
+        }
+        
+        .lyrics-container {
+            width: 95%;
+            max-width: 900px;
+            height: 85vh;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .song-info {
+            text-align: center;
+            margin-bottom: 20px;
+            z-index: 2;
+        }
+        
+        .song-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .artist {
+            font-size: 1.4rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .lyrics-content {
+            flex-grow: 1;
+            overflow: hidden;
+            padding: 20px 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lyrics-wrapper {
+            width: 100%;
+            max-height: 100%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .lyrics-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .lyrics-line {
+            font-size: 1.6rem;
+            line-height: 2.8rem;
+            margin: 18px 0;
+            opacity: var(--inactive-opacity);
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            padding-left: 0;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .lyrics-line.active {
+            opacity: 1;
+            transform: scale(1.05);
+            color: var(--highlight);
+            font-weight: 600;
+            text-shadow: 0 0 15px rgba(255, 107, 255, 0.5);
+            animation: subtleBlink 1s infinite ease-in-out;
+        }
+        
+        @keyframes subtleBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+        
+        .lyrics-line.section-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 40px 0 30px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .lyrics-line.intro-title {
+            animation: heartbeat 1.5s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            color: var(--intro-color);
+            text-shadow: 0 0 15px rgba(255, 0, 170, 0.7);
+        }
+        
+        @keyframes heartbeat {
+            0% { 
+                transform: scale(1);
+                text-shadow: 0 0 15px rgba(255, 0, 170, 0.7);
+            }
+            50% { 
+                transform: scale(1.08);
+                text-shadow: 0 0 25px rgba(255, 0, 170, 0.9);
+            }
+            100% { 
+                transform: scale(1);
+                text-shadow: 0 0 15px rgba(255, 0, 170, 0.7);
+            }
+        }
+        
+        .lyrics-line.adlib {
+            font-style: italic;
+            opacity: var(--inactive-opacity);
+            font-size: 1.4rem;
+        }
+        
+        /* Barra de progreso */
+        .spotify-progress {
+            width: 100%;
+            margin: 25px 0 15px 0;
+            height: 30px; /* Cambiado de 20px a 30px */
+            background: var(--progress-bg);
+            border-radius: 15px; /* Ajustado para coincidir con la nueva altura */
+            cursor: pointer;
+            position: relative;
+            transition: height 0.2s ease;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--progress-played);
+            width: 0%;
+            border-radius: 15px; /* Ajustado para coincidir con la nueva altura */
+            position: relative;
+            transition: width 0.1s linear;
+        }
+        
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 25px;
+            gap: 25px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .control-btn i {
+            font-size: 1.5rem;
+        }
+        
+        /* Estilos para el control de volumen */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slider {
+            /* slider */
+            --slider-width: 100px;
+            --slider-height: 6px;
+            --slider-bg: rgba(255, 255, 255, 0.2);
+            --slider-border-radius: 999px;
+            /* level */
+            --level-color: #fff;
+            --level-transition-duration: .1s;
+            /* icon */
+            --icon-margin: 0;
+            --icon-color: var(--text);
+            --icon-size: 20px;
+        }
+        
+        .slider {
+            cursor: pointer;
+            display: -webkit-inline-box;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            -webkit-box-orient: horizontal;
+            -webkit-box-direction: reverse;
+            -ms-flex-direction: row-reverse;
+            flex-direction: row-reverse;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+        
+        .slider .volume {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: var(--icon-margin);
+            color: var(--icon-color);
+            width: var(--icon-size);
+            height: auto;
+        }
+        
+        .slider .level {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: var(--slider-width);
+            height: var(--slider-height);
+            background: var(--slider-bg);
+            overflow: hidden;
+            border-radius: var(--slider-border-radius);
+            -webkit-transition: height var(--level-transition-duration);
+            -o-transition: height var(--level-transition-duration);
+            transition: height var(--level-transition-duration);
+            cursor: inherit;
+        }
+        
+        .slider .level::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 0;
+            height: 0;
+            -webkit-box-shadow: -200px 0 0 200px var(--level-color);
+            box-shadow: -200px 0 0 200px var(--level-color);
+        }
+        
+        .slider:hover .level {
+            height: calc(var(--slider-height) * 2);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .lyrics-container {
+                width: 98%;
+                height: 90vh;
+                padding: 20px;
+            }
+            
+            .song-title {
+                font-size: 2.2rem;
+            }
+            
+            .artist {
+                font-size: 1.2rem;
+            }
+            
+            .lyrics-line {
+                font-size: 1.4rem;
+                line-height: 2.4rem;
+            }
+            
+            .spotify-progress {
+                height: 25px; /* Ajustado para móvil */
+                border-radius: 12.5px;
+            }
+            
+            .progress {
+                border-radius: 12.5px;
+            }
+            
+            .control-btn {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .slider {
+                --slider-width: 80px;
+                --icon-size: 18px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="lyrics-container">
+        <div class="song-info">
+            <h1 class="song-title">Heavy Love</h1>
+            <div class="artist">Odetari</div>
+        </div>
+        
+        <div class="lyrics-content">
+            <div class="lyrics-wrapper" id="lyricsContent">
+                <!-- Lyrics will be inserted here by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="spotify-progress" id="progressContainer">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        <div class="time-display">
+            <span id="currentTime">0:00</span>
+            <span id="totalTime">2:30</span>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="playBtn"><i class="fas fa-play"></i></button>
+            <div class="volume-control">
+                <label class="slider">
+                    <input type="range" class="level" id="volumeControl" min="0" max="1" step="0.01" value="1">
+                    <svg class="volume" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve">
+                        <g>
+                            <path d="M18.36 19.36a1 1 0 0 1-.705-1.71C19.167 16.148 20 14.142 20 12s-.833-4.148-2.345-5.65a1 1 0 1 1 1.41-1.419C20.958 6.812 22 9.322 22 12s-1.042 5.188-2.935 7.069a.997.997 0 0 1-.705.291z" fill="currentColor" data-original="#000000"></path>
+                            <path d="M15.53 16.53a.999.999 0 0 1-.703-1.711C15.572 14.082 16 13.054 16 12s-.428-2.082-1.173-2.819a1 1 0 1 1 1.406-1.422A6 6 0 0 1 18 12a6 6 0 0 1-1.767 4.241.996.996 0 0 1-.703.289zM12 22a1 1 0 0 1-.707-.293L6.586 17H4c-1.103 0-2-.897-2-2V9c0-1.103.897-2 2-2h2.586l4.707-4.707A.998.998 0 0 1 13 3v18a1 1 0 0 1-1 1z" fill="currentColor" data-original="#000000"></path>
+                        </g>
+                    </svg>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audioPlayer">
+        <source src="Odetari-Heavy-Love-_Official-Audio_.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // Lyrics data with timings (in seconds)
+        const lyricsData = [
+            { text: "♫", time: 0, type: "section", class: "intro-title" },
+            { text: "Put your weight up on me", time: 16.0 },
+            { text: "Heavy love", time: 17.5},
+            { text: "(Ooh, ah, ooh, ah)", time: 20.0, type: "adlib"},
+            { text: "(Ooh, ah, ooh, ah)", time: 22.0, type: "adlib" },
+            { text: "Put your weight up on me", time: 24.0 },
+            { text: "Heavy love", time: 25.5},
+            { text: "(Ooh, ah, ooh, ah)", time: 28.0, type: "adlib"},
+            { text: "(Ooh, ah, ooh, ah)", time: 30.0, type: "adlib" },
+            { text: " ", time: 30.5 },
+            { text: "Yeah (co-co-co-co—)", time: 31.0, type: "adlib"},
+            { text: "Yeah, my codeine looking like Barney", time: 32.0 },
+            { text: "This bitch acting way too preppy like Barbie", time: 36.0 },
+            { text: "I-I-I like sleazy bitches ready to party", time: 39.5 },
+            { text: "Rub that pussy on my stache like Steve Harvey", time: 44.0 },
+            
+            { text: "Got my hand on that wheel", time: 48.5 },
+            { text: "whippin' down the highway", time: 49.5 },
+            { text: "Please don't try give advice 'cause", time: 52.5 },
+            { text: "I did this my way-ay-ay", time: 55.0 },
+            { text: "Clock into your job", time: 57.0 },
+            { text: "The only time I see you Friday", time: 58.0 },
+            { text: "And when you see your mom", time: 61.0 },
+            { text: "Just let her know how much you like me", time: 62.0 },
+            
+            { text: "Put your weight up on me", time: 65.0 },
+            { text: "Heavy love", time: 66.5 },
+            { text: "(Ooh, ah, ooh, ah)", time: 69.0, type: "adlib"},
+            { text: "(Ooh, ah, ooh, ah)", time: 71.0, type: "adlib" },
+            { text: "Put your weight up on me", time: 73.0 },
+            { text: "Heavy love", time: 74.5 },
+            { text: "(Ooh, ah, ooh, ah)", time: 77.0, type: "adlib"},
+            { text: "(Ooh, ah, ooh, ah)", time: 79.0, type: "adlib" },
+            
+            { text: "You ain't got shit goin' on", time: 82.0 },
+            { text: "You ain't gon' touch my shit at all", time: 83.5 },
+            { text: "One, two, three, got 'em froze", time: 86.0 },
+            { text: "They don't got five plaques on they walls", time: 87.0 },
+            
+            { text: "(Do it, do it)", time: 90.0, type: "adlib"},
+            { text: "(Do it, do it)", time: 91.0, type: "adlib"},
+            { text: "(Do it, do it)", time: 92.0, type: "adlib"},
+            { text: "(Do it, uh)", time: 93.0, type: "adlib"},
+            { text: "(Do it, do it)", time: 94.0, type: "adlib"},
+            { text: "(Do it, do it)", time: 95.0, type: "adlib"},
+            { text: "(Do it, do it)", time: 96.0, type: "adlib"},
+            { text: "(Do it, uh)", time: 97.0, type: "adlib"},
+            
+            { text: "♫", time: 98.0, type: "section" },
+            { text: "Snow angels", time: 101.0 },
+            { text: "♫", time: 106.0, type: "section" },
+            { text: "Snow angels", time: 109.0 },
+            
+            { text: "Put your weight up on me", time: 113.5 },
+            { text: "Heavy love", time: 115.0 },
+            { text: "(Ooh, ah, ooh, ah)", time: 117.5, type: "adlib"},
+            { text: "(Ooh, ah, ooh, ah)", time: 119.5, type: "adlib"},
+            { text: "Put your weight up on me", time: 121.5 },
+            { text: "Heavy love", time: 123.0 },
+            { text: "(Ooh, ah, ooh, ah)", time: 125.5, type: "adlib"},
+            { text: "(Ooh, ah, ooh, ah)", time: 127.5, type: "adlib" },
+        ];
+
+        // DOM elements
+        const lyricsContent = document.getElementById('lyricsContent');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        const playBtn = document.getElementById('playBtn');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const totalTimeDisplay = document.getElementById('totalTime');
+        const volumeControl = document.getElementById('volumeControl');
+        
+        // Variables para el arrastre
+        let isDragging = false;
+        let wasPlaying = false;
+        
+        // Initialize lyrics
+        function initLyrics() {
+            lyricsContent.innerHTML = '';
+            lyricsData.forEach(line => {
+                const lineElement = document.createElement('div');
+                lineElement.classList.add('lyrics-line');
+                
+                if (line.type === "section") {
+                    lineElement.classList.add('section-title');
+                } else if (line.type === "adlib") {
+                    lineElement.classList.add('adlib');
+                }
+                
+                if (line.class) {
+                    lineElement.classList.add(line.class);
+                }
+                
+                lineElement.textContent = line.text;
+                lineElement.dataset.time = line.time;
+                lyricsContent.appendChild(lineElement);
+            });
+        }
+        
+        // Format time (seconds to MM:SS)
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        
+        // Update active line based on current time
+        function updateLyrics() {
+            const currentTime = audioPlayer.currentTime;
+            const lines = document.querySelectorAll('.lyrics-line');
+            let activeLine = null;
+            
+            // Update time display
+            currentTimeDisplay.textContent = formatTime(currentTime);
+            
+            lines.forEach(line => {
+                line.classList.remove('active', 'pulse');
+                const lineTime = parseFloat(line.dataset.time);
+                
+                if (lineTime <= currentTime) {
+                    activeLine = line;
+                }
+            });
+            
+            if (activeLine) {
+                activeLine.classList.add('active', 'pulse');
+                // Scroll to active line (smoothly and centered)
+                activeLine.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+            
+            // Update progress bar (solo si no estamos arrastrando)
+            if (!isDragging) {
+                const progress = (currentTime / audioPlayer.duration) * 100 || 0;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            if (!audioPlayer.paused) {
+                requestAnimationFrame(updateLyrics);
+            }
+        }
+        
+        // Seek audio to position
+        function seekToPosition(clientX) {
+            const rect = progressContainer.getBoundingClientRect();
+            let pos = (clientX - rect.left) / rect.width;
+            pos = Math.max(0, Math.min(1, pos)); // Asegurar que esté entre 0 y 1
+            audioPlayer.currentTime = pos * audioPlayer.duration;
+            
+            // Actualización inmediata
+            const progress = pos * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Forzar actualización de letras
+            updateLyrics();
+        }
+        
+        // Event listeners para la barra de progreso (mouse)
+        progressContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            wasPlaying = !audioPlayer.paused;
+            if (wasPlaying) {
+                audioPlayer.pause();
+            }
+            seekToPosition(e.clientX);
+            e.preventDefault();
+        });
+        
+        // Event listeners para la barra de progreso (touch)
+        progressContainer.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            wasPlaying = !audioPlayer.paused;
+            if (wasPlaying) {
+                audioPlayer.pause();
+            }
+            seekToPosition(e.touches[0].clientX);
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                seekToPosition(e.clientX);
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                seekToPosition(e.touches[0].clientX);
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                if (wasPlaying) {
+                    audioPlayer.play();
+                }
+            }
+        });
+        
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                isDragging = false;
+                if (wasPlaying) {
+                    audioPlayer.play();
+                }
+            }
+        });
+        
+        // Play/pause button
+        playBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play()
+                    .then(() => {
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        updateLyrics();
+                    })
+                    .catch(error => {
+                        console.error("Error al reproducir:", error);
+                        alert("Error al reproducir el audio. Asegúrate de usar un servidor web y de tener el archivo de audio.");
+                    });
+            } else {
+                audioPlayer.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+        
+        // Update total time when metadata is loaded
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            totalTimeDisplay.textContent = formatTime(audioPlayer.duration);
+        });
+        
+        audioPlayer.addEventListener('ended', () => {
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            // Resetear posición al finalizar
+            progressBar.style.width = '100%';
+        });
+        
+        // Control de volumen
+        volumeControl.addEventListener('input', (e) => {
+            audioPlayer.volume = e.target.value;
+        });
+        
+        // Set initial volume
+        audioPlayer.volume = volumeControl.value;
+        
+        // Initialize
+        initLyrics();
+        
+        // Audio error handling
+        audioPlayer.addEventListener('error', (e) => {
+            console.error("Error de audio:", e);
+            alert("Error al cargar el audio. Asegúrate de que la URL del audio sea correcta y accesible.");
+        });
+    </script>
+</body>
+</html>
